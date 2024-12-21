@@ -52,7 +52,11 @@ export function CalendarTable() {
           </thead>
           <tbody>
             {mockCalendar.map((entry, index) => (
-              <tr key={index} className='odd:bg-white even:bg-gray-50'>
+              <tr
+                key={index}
+                className='odd:bg-white even:bg-gray-50'
+                role='row'
+              >
                 <td className='border p-2'>{entry.user}</td>
                 <td className='border p-2'>{entry.monday}</td>
                 <td className='border p-2'>{entry.tuesday}</td>

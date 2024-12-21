@@ -18,7 +18,7 @@ export function Header() {
 
   return (
     <header className='header shadow flex items-center justify-between px-6 py-4 text-primary'>
-      <div className='text-xl font-bold'>Dashboard</div>
+      <div className='text-xl font-bold'>Work From Home Request</div>
       <button
         onClick={toggleTheme}
         className='px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600'

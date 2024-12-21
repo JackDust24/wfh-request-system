@@ -1,3 +1,5 @@
+//TODO: Change the form to a specific calendar third party popup
+
 export function RequestForm() {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -11,20 +13,28 @@ export function RequestForm() {
       </h3>
       <form onSubmit={handleFormSubmit}>
         <div className='mb-4'>
-          <label className='block text-sm font-medium text-secondary'>
+          <label
+            className='block text-sm font-medium text-secondary'
+            htmlFor='start-date'
+          >
             Start Date:
           </label>
           <input
+            id='start-date'
             type='date'
             className='mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
           />
         </div>
         <div className='mb-4'>
-          <label className='block text-sm font-medium text-secondary'>
+          <label
+            className='block text-sm font-medium text-secondary'
+            htmlFor='end-date'
+          >
             End Date:
           </label>
           <input
             type='date'
+            id='end-date'
             className='mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
           />
         </div>
