@@ -1,10 +1,10 @@
 export function Profile() {
   return (
-    <div className='bg-white p-6 rounded shadow'>
+    <div className='component p-6 rounded shadow text-primary'>
       <h3 className='text-lg font-semibold mb-4'>User Profile</h3>
-      <p className='text-gray-700'>Name: John Doe</p>
-      <p className='text-gray-700'>Email: john@example.com</p>
-      <p className='text-gray-700'>Role: Developer</p>
+      <p className='text-secondary'>Name: John Doe</p>
+      <p className='text-secondary'>Email: john@example.com</p>
+      <p className='text-secondary'>Role: Developer</p>
     </div>
   );
 }

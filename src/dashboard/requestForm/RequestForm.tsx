@@ -5,11 +5,13 @@ export function RequestForm() {
   };
 
   return (
-    <div className='col-span-2 bg-white p-6 rounded shadow'>
-      <h3 className='text-lg font-semibold mb-4'>Book Work From Home</h3>
+    <div className='col-span-2 component p-6 rounded shadow'>
+      <h3 className='text-lg font-semibold mb-4 text-primary'>
+        Book Work From Home
+      </h3>
       <form onSubmit={handleFormSubmit}>
         <div className='mb-4'>
-          <label className='block text-sm font-medium text-gray-700'>
+          <label className='block text-sm font-medium text-secondary'>
             Start Date:
           </label>
           <input
@@ -18,7 +20,7 @@ export function RequestForm() {
           />
         </div>
         <div className='mb-4'>
-          <label className='block text-sm font-medium text-gray-700'>
+          <label className='block text-sm font-medium text-secondary'>
             End Date:
           </label>
           <input

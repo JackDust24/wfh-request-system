@@ -10,7 +10,7 @@ export function Dashboard() {
       <Header />
       <div className='flex flex-1'>
         <Sidebar />
-        <main className='flex-1 p-6 bg-gray-100'>
+        <main className='flex-1 p-6 bg-background'>
           <div className='grid grid-cols-3 gap-6 mb-6'>
             <RequestForm />
             <Profile />
