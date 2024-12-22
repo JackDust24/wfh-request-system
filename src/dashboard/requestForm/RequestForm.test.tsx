@@ -7,18 +7,12 @@ describe('RequestForm', () => {
   test('renders the form with all fields and submit button', () => {
     render(<RequestForm />);
 
-    // Check if the heading is rendered
     expect(
       screen.getByRole('heading', { name: /book work from home/i })
     ).toBeInTheDocument();
 
-    // Check if the Start Date input is rendered
     expect(screen.getByLabelText(/start date:/i)).toBeInTheDocument();
-
-    // Check if the End Date input is rendered
     expect(screen.getByLabelText(/end date:/i)).toBeInTheDocument();
-
-    // Check if the Submit button is rendered
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
@@ -63,11 +57,9 @@ describe('RequestForm', () => {
     await user.type(startDateInput, '2024-12-24');
     await user.type(endDateInput, '2024-12-31');
 
-    // Submit the form
     await user.click(submitButton);
 
     expect(consoleLogSpy).toHaveBeenCalledWith('Submit Work From Home Reuqest');
-    // Clean up the spy
     consoleLogSpy.mockRestore();
   });
 });
