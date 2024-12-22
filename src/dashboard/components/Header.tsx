@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../providers/UserAuthProvider';
+import { Button } from '../../components/Button';
 
 export function Header() {
+  const { user, logout } = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
@@ -18,14 +21,9 @@ export function Header() {
 
   return (
     <header className='header shadow flex items-center justify-between px-6 py-4 text-primary'>
-      <div className='text-xl font-bold'>Work From Home Request</div>
-      <button
-        onClick={toggleTheme}
-        className='px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600'
-      >
-        Toggle Theme
-      </button>
-      <div className='cursor-pointer hover:text-gray-500'>Login</div>
+      <div className='text-xl font-bold'>Work From Home Studio</div>
+      <Button onClick={toggleTheme} text='Toggle Theme' variant='secondary' />
+      {user && <Button onClick={logout} text='Logout' variant='destructive' />}
     </header>
   );
 }

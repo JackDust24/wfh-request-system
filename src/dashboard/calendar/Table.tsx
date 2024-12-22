@@ -1,6 +1,6 @@
 const mockCalendar = [
   {
-    user: 'John Doe',
+    user: 'Jason Whittaker',
     monday: 'WFH',
     tuesday: '',
     wednesday: '',
