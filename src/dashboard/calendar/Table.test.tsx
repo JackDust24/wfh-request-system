@@ -29,7 +29,9 @@ describe('CalendarTable', () => {
     expect(rows).toHaveLength(3); // 1 header row + 2 data rows
 
     // Check the first data row
-    const johnRow = screen.getByRole('row', { name: /John Doe WFH.*WFH/i });
+    const johnRow = screen.getByRole('row', {
+      name: /Jason Whittaker WFH.*WFH/i,
+    });
     expect(johnRow).toBeInTheDocument();
 
     // Check the second data row
