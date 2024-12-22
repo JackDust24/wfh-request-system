@@ -7,7 +7,7 @@ import { Button } from '../components/Button';
 
 const loginSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
-  email: z.string().email('Invalid email address.'),
+  email: z.string().email('No email entered.'),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters.')
