@@ -1,65 +1,41 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFetchCalendarData } from '../../api/userdata';
 import { getWeekDates } from '../../lib/dateHelper';
-import { UserRequest } from '../../lib/types';
+import { CalendarDataType, UserRequest } from '../../lib/types';
 import { useWFHStore } from '../../store/wfhRequestsStore';
 import { sortUsers } from './helpers/helper';
 import { WFHEventEmitter } from '../../lib/eventEmitter';
 import { useRequireAuth } from '../../hooks/useRequestAuth';
+import { TableHeader } from './components/TableHeader';
+import { TableRow } from './components/TableRow';
 
 const API_URL =
   process.env.MOCK_JSON_API ||
   'https://run.mocky.io/v3/e623cd04-eeca-4155-8da0-6851162c4d53';
-
-const tableHead = [
-  'User',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
-type CalendarDataType = {
-  user: string;
-  monday: string;
-  tuesday: string;
-  wednesday: string;
-  thursday: string;
-  friday: string;
-  saturday: string;
-  sunday: string;
-};
 
 export function CalendarTable() {
   const user = useRequireAuth();
 
   const [initialLoad, setInitialLoad] = useState(false);
   const { data, loading, error } = useFetchCalendarData(API_URL);
-  const { addUser, addDate, users } = useWFHStore();
+  const { addUser, addDate, deleteDate, users } = useWFHStore();
   const [calendarData, setCalendarData] = useState<CalendarDataType[]>([]);
 
   const startDate = new Date('2024-12-23'); //TODO: We will get the user to select this
   const weekDates = getWeekDates(startDate);
 
   const generateCalendarData = () => {
-    console.log('generateCalendarData', users);
-    console.log('generateCalendarData loggedInUserEmail', user?.email);
-
     const sortedUsers = sortUsers(users, user?.email ?? null);
 
     const updatedCalendarData = sortedUsers?.map((item: UserRequest) => {
       return {
         user: item.name,
+        email: item.email,
         monday: item.dates.includes(weekDates[0]) ? 'WFH Requested' : '',
         tuesday: item.dates.includes(weekDates[1]) ? 'WFH Requested' : '',
         wednesday: item.dates.includes(weekDates[2]) ? 'WFH Requested' : '',
         thursday: item.dates.includes(weekDates[3]) ? 'WFH Requested' : '',
         friday: item.dates.includes(weekDates[4]) ? 'WFH Requested' : '',
-        saturday: item.dates.includes(weekDates[5]) ? 'WFH Requested' : '',
-        sunday: item.dates.includes(weekDates[6]) ? 'WFH Requested' : '',
       };
     });
 
@@ -67,35 +43,18 @@ export function CalendarTable() {
   };
 
   useEffect(() => {
-    console.log('data useffect');
-
     if (data) {
       data.forEach((user: UserRequest) => {
         addUser(user);
-        user.dates.forEach((date) => addDate(date, user.email));
+        generateCalendarData();
+        setInitialLoad(true);
       });
-      generateCalendarData();
-      setInitialLoad(true);
     }
-  }, [data, addUser, addDate]);
+  }, [data, addUser]);
 
-  // useEffect(() => {
-  //   const listener = () => {
-  //     generateCalendarData();
-  //   };
-
-  //   subscribe(listener);
-
-  //   return () => {
-  //     unsubscribe(listener);
-  //   };
-  // }, [subscribe, unsubscribe]);
-
+  //TODO: Unable to get even listener to work as of yet
   useEffect(() => {
-    console.log('CalendarTable mounted');
     if (initialLoad) {
-      console.log('Set up listeneres');
-
       const handleEvent = () => {
         generateCalendarData();
       };
@@ -108,7 +67,29 @@ export function CalendarTable() {
         WFHEventEmitter.off('wfhEventChange', handleEvent);
       };
     }
-  }, [initialLoad]);
+  }, []);
+
+  useEffect(() => {
+    generateCalendarData();
+  }, [users]);
+
+  const handleRequestClick = (day: string, action: 'add' | 'delete') => {
+    if (action === 'add') {
+      const callAddDate = addDate(day, user?.email ?? '');
+      if (callAddDate.success) {
+        generateCalendarData();
+      } else {
+        alert(callAddDate.message);
+      }
+    } else if (action === 'delete') {
+      const callDeleteDate = deleteDate(day, user?.email ?? '');
+      if (callDeleteDate.success) {
+        generateCalendarData();
+      } else {
+        alert(callDeleteDate.message);
+      }
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -121,32 +102,17 @@ export function CalendarTable() {
         </h3>
         <table className='w-full min-w-[800px] table-fixed border-collapse'>
           <thead>
-            <tr className='bg-gray-200 text-left'>
-              <th className='border p-2 w-1/8'>User</th>
-              {weekDates.map((date, index) => (
-                <th key={index} className='border p-2'>
-                  {tableHead[index + 1]} <br />
-                  <span className='text-xs text-gray-500'>{date}</span>
-                </th>
-              ))}
-            </tr>
+            <TableHeader weekDates={weekDates} />
           </thead>
           <tbody>
             {calendarData?.map((entry, index) => (
-              <tr
+              <TableRow
                 key={index}
-                className='odd:bg-white even:bg-gray-50'
-                role='row'
-              >
-                <td className='border p-2'>{entry.user}</td>
-                <td className='border p-2'>{entry.monday}</td>
-                <td className='border p-2'>{entry.tuesday}</td>
-                <td className='border p-2'>{entry.wednesday}</td>
-                <td className='border p-2'>{entry.thursday}</td>
-                <td className='border p-2'>{entry.friday}</td>
-                <td className='border p-2'>Unavailable</td>
-                <td className='border p-2'>Unavailable</td>
-              </tr>
+                entry={entry}
+                userEmail={user?.email ?? null}
+                weekDates={weekDates}
+                onClick={(day, action) => handleRequestClick(day, action)}
+              />
             ))}
           </tbody>
         </table>

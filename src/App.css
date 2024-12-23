@@ -21,6 +21,17 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.truncate-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  font-size: 0.875rem; 
+  line-height: 1.25rem;  
+}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);

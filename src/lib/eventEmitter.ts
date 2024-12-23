@@ -5,8 +5,6 @@ export class EventEmitter<Events> {
   private events: Partial<Record<keyof Events, EventCallback[]>> = {};
 
   on<K extends keyof Events>(event: K, callback: EventCallback) {
-    console.log('event', event);
-
     if (!this.events[event]) {
       this.events[event] = [];
     }

@@ -14,11 +14,6 @@ type WFHStore = {
   addUser: (user: UserRequest) => void;
   addDate: (date: string, email: string) => WfhRequestResponse;
   addDateRange: (dates: string[], email: string) => WfhRequestResponse;
-  editDate: (
-    oldDate: string,
-    newDate: string,
-    email: string
-  ) => WfhRequestResponse;
   deleteDate: (date: string, email: string) => WfhRequestResponse;
   reset: () => void;
 };
@@ -50,8 +45,17 @@ export const useWFHStore = create(
               email: userEmail,
               dates: user.dates?.length ? [...user.dates] : [],
             };
+
+            if (user.dates?.length) {
+              user.dates.forEach((date) => {
+                if (!state.requestsPerDay[date]) {
+                  state.requestsPerDay[date] = [];
+                }
+                state.requestsPerDay[date].push(userEmail);
+              });
+            }
           }
-          console.log('Add user', user);
+
           WFHEventEmitter.emit('wfhEventChange');
 
           return { users: updatedUsers };
@@ -152,37 +156,6 @@ export const useWFHStore = create(
         WFHEventEmitter.emit('wfhEventChange');
 
         return { success: true, message: 'Dates successfully added.' };
-      },
-
-      editDate: (oldDate, newDate, email) => {
-        const { users } = get();
-        if (!users[email]) {
-          return { success: false, message: 'User does not exist.' };
-        }
-
-        set((state) => {
-          const updatedRequests = { ...state.requestsPerDay };
-          const updatedUsers = { ...state.users };
-
-          updatedRequests[oldDate] = updatedRequests[oldDate].filter(
-            (e) => e !== email
-          );
-          updatedUsers[email].dates = updatedUsers[email].dates.filter(
-            (d) => d !== oldDate
-          );
-
-          if (!updatedRequests[newDate]) {
-            updatedRequests[newDate] = [];
-          }
-          updatedRequests[newDate].push(email);
-          updatedUsers[email].dates.push(newDate);
-
-          return { requestsPerDay: updatedRequests, users: updatedUsers };
-        });
-
-        WFHEventEmitter.emit('wfhEventChange');
-
-        return { success: true, message: 'Date successfully updated.' };
       },
 
       deleteDate: (date, email) => {

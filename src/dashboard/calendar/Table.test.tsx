@@ -24,8 +24,6 @@ describe('CalendarTable', () => {
     'Wednesday 2024-12-25',
     'Thursday 2024-12-26',
     'Friday 2024-12-27',
-    'Saturday 2024-12-28',
-    'Sunday 2024-12-29',
   ];
 
   const mockData: UserRequest[] = [

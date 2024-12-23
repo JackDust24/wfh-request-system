@@ -5,3 +5,13 @@ export type UserRequest = {
   role: string;
   dates: string[];
 };
+
+export type CalendarDataType = {
+  user: string;
+  email: string;
+  monday: string;
+  tuesday: string;
+  wednesday: string;
+  thursday: string;
+  friday: string;
+};
