@@ -46,9 +46,9 @@ export function CalendarTable() {
     if (data) {
       data.forEach((user: UserRequest) => {
         addUser(user);
-        generateCalendarData();
-        setInitialLoad(true);
       });
+      generateCalendarData();
+      setInitialLoad(true);
     }
   }, [data, addUser]);
 

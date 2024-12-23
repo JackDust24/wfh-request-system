@@ -1,9 +1,22 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import { CalendarTable } from './Table';
 import * as api from '../../api/userdata';
 import { UserRequest } from '../../lib/types';
 import { useWFHStore } from '../../store/wfhRequestsStore';
+import { useAuth } from '../../providers/UserAuthProvider';
+import { TableRow } from './components/TableRow';
+import * as auth from '../../hooks/useRequestAuth';
+import * as store from '../../store/useWFHStore';
+
+jest.mock('../../providers/UserAuthProvider', () => ({
+  useAuth: jest.fn(),
+}));
+
+jest.mock('../../hooks/useRequestAuth', () => ({
+  useRequireAuth: jest.fn(),
+}));
 
 jest.mock('../../api/userdata', () => ({
   useFetchCalendarData: jest.fn(),
@@ -14,8 +27,10 @@ jest.mock('../../store/wfhRequestsStore', () => ({
 }));
 
 describe('CalendarTable', () => {
-  const addUserMock = jest.fn();
-  const addDateMock = jest.fn();
+  const mockAddUser = jest.fn();
+  const mockAddDate = jest.fn();
+  const mockDeleteDate = jest.fn();
+  const mockOnClick = jest.fn();
 
   const headers = [
     'User',
@@ -25,6 +40,24 @@ describe('CalendarTable', () => {
     'Thursday 2024-12-26',
     'Friday 2024-12-27',
   ];
+
+  const weekDates = [
+    '2024-12-23',
+    '2024-12-24',
+    '2024-12-25',
+    '2024-12-26',
+    '2024-12-27',
+  ];
+
+  const mockEntry = {
+    user: 'Jason Targaryen',
+    email: 'jason@example.com',
+    monday: 'WFH Requested',
+    tuesday: 'WFH Requested',
+    wednesday: 'WFH Requested',
+    thursday: '',
+    friday: '',
+  };
 
   const mockData: UserRequest[] = [
     {
@@ -55,6 +88,8 @@ describe('CalendarTable', () => {
   };
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     (api.useFetchCalendarData as jest.Mock).mockReturnValue({
       data: mockData,
       loading: false,
@@ -62,9 +97,21 @@ describe('CalendarTable', () => {
     });
 
     (useWFHStore as unknown as jest.Mock).mockReturnValue({
-      addUser: addUserMock,
+      addUser: mockAddUser,
       users: [...mockData, mockLoggedInUser],
-      addDate: addDateMock,
+      addDate: mockAddDate,
+      deleteDate: mockDeleteDate,
+    });
+
+    (useAuth as jest.Mock).mockReturnValue({
+      user: {
+        id: '1',
+        name: 'Jason Whittaker',
+        email: 'jason@example.com',
+        role: 'Frontend Developer',
+      },
+      login: jest.fn(),
+      logout: jest.fn(),
     });
   });
 
@@ -84,19 +131,19 @@ describe('CalendarTable', () => {
 
     expect(
       screen.getByRole('row', {
-        name: /Jon Snow.*WFH Requested.*WFH Requested/i,
+        name: /Jon Snow.*WFH Request.*WFH Request/i,
       })
     ).toBeInTheDocument();
 
     expect(
       screen.getByRole('row', {
-        name: /Daenerys Targaryen.*WFH Requested.*WFH Requested/i,
+        name: /Daenerys Targaryen.*WFH Request.*WFH Request/i,
       })
     ).toBeInTheDocument();
 
     expect(
       screen.getByRole('row', {
-        name: /Tyrion Lannister.*WFH Requested.*WFH Requested.*WFH Requested/i,
+        name: /Tyrion Lannister.*WFH Request.*WFH Request.*WFH Request/i,
       })
     ).toBeInTheDocument();
   });
@@ -105,24 +152,96 @@ describe('CalendarTable', () => {
     render(<CalendarTable />);
 
     mockData.forEach((user) => {
-      expect(addUserMock).toHaveBeenCalledWith(user);
-      user.dates.forEach((date) => {
-        expect(addDateMock).toHaveBeenCalledWith(date, user.email);
-      });
+      expect(mockAddUser).toHaveBeenCalledWith(user);
     });
   });
 
-  test('stored data returns mock data and logged in user sorted at the top row', () => {
-    render(<CalendarTable />);
+  test('handles clicks for the logged-in user and calls deleteDate', async () => {
+    const user = userEvent.setup();
 
-    expect(
-      screen.getByRole('row', {
-        name: /Jason Whittaker/,
-      })
-    ).toBeInTheDocument();
+    (auth.useRequireAuth as jest.Mock).mockReturnValue({
+      email: 'jason@example.com',
+    });
 
-    const rows = screen.getAllByRole('row');
-    const firstRow = rows[1]; // First row after the header
-    expect(firstRow).toHaveTextContent('Jason Whittaker');
+    render(
+      <table>
+        <tbody>
+          <TableRow
+            entry={mockEntry}
+            userEmail={'jason@example.com'}
+            weekDates={weekDates}
+            onClick={mockOnClick}
+          />
+        </tbody>
+      </table>
+    );
+
+    const wfhRequestCells = screen.getAllByText('WFH Request');
+
+    // Click on the first "In Office" cell
+    await user.click(wfhRequestCells[0]);
+
+    expect(mockOnClick).toHaveBeenCalledWith('2024-12-23', 'delete');
+  });
+
+  test('handles clicks for the logged-in user and calls addDate', async () => {
+    const user = userEvent.setup();
+
+    (auth.useRequireAuth as jest.Mock).mockReturnValue({
+      email: 'jason@example.com',
+    });
+
+    render(
+      <table>
+        <tbody>
+          <TableRow
+            entry={mockEntry}
+            userEmail={'jason@example.com'}
+            weekDates={weekDates}
+            onClick={mockOnClick}
+          />
+        </tbody>
+      </table>
+    );
+
+    const inOfficeCells = screen.getAllByText('In Office');
+
+    await user.click(inOfficeCells[0]);
+
+    expect(mockOnClick).toHaveBeenCalledWith('2024-12-26', 'add');
+  });
+
+  test('does not call addDate or deleteDate for other users', async () => {
+    const user = userEvent.setup();
+
+    (auth.useRequireAuth as jest.Mock).mockReturnValue({
+      email: 'jason@example.com',
+    });
+
+    render(
+      <table>
+        <tbody>
+          <TableRow
+            entry={mockEntry}
+            userEmail={'tomn@example.com'}
+            weekDates={weekDates}
+            onClick={mockOnClick}
+          />
+        </tbody>
+      </table>
+    );
+
+    // Find all "In Office" and "WFH Request" cells
+    const inOfficeCells = screen.getAllByText('In Office');
+    const wfhRequestCells = screen.getAllByText('WFH Request');
+
+    await user.click(inOfficeCells[0]);
+
+    expect(mockOnClick).not.toHaveBeenCalled();
+
+    await user.click(wfhRequestCells[0]);
+
+    expect(mockAddDate).not.toHaveBeenCalled();
+    expect(mockDeleteDate).not.toHaveBeenCalled();
   });
 });
