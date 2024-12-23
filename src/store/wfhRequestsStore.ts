@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { UserRequest } from '../lib/types';
 import { persist } from 'zustand/middleware';
+import { WFHEventEmitter } from '../lib/eventEmitter';
 
 type WfhRequestResponse = {
   success: boolean;
@@ -10,8 +11,6 @@ type WfhRequestResponse = {
 type WFHStore = {
   users: Record<string, UserRequest>;
   requestsPerDay: Record<string, string[]>;
-  loggedInUserEmail: string | null;
-  setLoggedInUserEmail: (email: string) => void;
   addUser: (user: UserRequest) => void;
   addDate: (date: string, email: string) => WfhRequestResponse;
   addDateRange: (dates: string[], email: string) => WfhRequestResponse;
@@ -21,6 +20,7 @@ type WFHStore = {
     email: string
   ) => WfhRequestResponse;
   deleteDate: (date: string, email: string) => WfhRequestResponse;
+  reset: () => void;
 };
 
 const MAX_REQUESTS_PER_DAY = 3;
@@ -30,11 +30,6 @@ export const useWFHStore = create(
     (set, get) => ({
       users: {},
       requestsPerDay: {},
-      loggedInUserEmail: null,
-
-      setLoggedInUserEmail: (email) => {
-        set({ loggedInUserEmail: email });
-      },
 
       addUser: (user: UserRequest) => {
         set((state) => {
@@ -52,9 +47,12 @@ export const useWFHStore = create(
             updatedUsers[userEmail] = {
               name: user.name,
               role: user.role,
+              email: userEmail,
               dates: user.dates?.length ? [...user.dates] : [],
             };
           }
+          console.log('Add user', user);
+          WFHEventEmitter.emit('wfhEventChange');
 
           return { users: updatedUsers };
         });
@@ -97,6 +95,8 @@ export const useWFHStore = create(
           };
           return { requestsPerDay: updatedRequests, users: updatedUsers };
         });
+
+        WFHEventEmitter.emit('wfhEventChange');
 
         return { success: true, message: 'Date successfully added.' };
       },
@@ -149,11 +149,13 @@ export const useWFHStore = create(
           return { requestsPerDay: updatedRequestsPerDay, users: updatedUsers };
         });
 
+        WFHEventEmitter.emit('wfhEventChange');
+
         return { success: true, message: 'Dates successfully added.' };
       },
 
       editDate: (oldDate, newDate, email) => {
-        const { requestsPerDay, users } = get();
+        const { users } = get();
         if (!users[email]) {
           return { success: false, message: 'User does not exist.' };
         }
@@ -178,11 +180,13 @@ export const useWFHStore = create(
           return { requestsPerDay: updatedRequests, users: updatedUsers };
         });
 
+        WFHEventEmitter.emit('wfhEventChange');
+
         return { success: true, message: 'Date successfully updated.' };
       },
 
       deleteDate: (date, email) => {
-        const { requestsPerDay, users } = get();
+        const { users } = get();
         if (!users[email]) {
           return { success: false, message: 'User does not exist.' };
         }
@@ -203,9 +207,18 @@ export const useWFHStore = create(
           return { requestsPerDay: updatedRequests, users: updatedUsers };
         });
 
+        WFHEventEmitter.emit('wfhEventChange');
+
         return { success: true, message: 'Date successfully deleted.' };
       },
+
+      reset: () =>
+        set({
+          users: {},
+          requestsPerDay: {},
+        }),
     }),
+
     {
       name: 'wfh-store', // Local storage persistent key
     }

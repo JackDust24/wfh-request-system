@@ -32,6 +32,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const login = (user: User) => {
     setUser(user);
@@ -45,8 +46,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
+    console.log('savedUser', savedUser);
     if (savedUser) setUser(JSON.parse(savedUser) as User);
+    setLoading(false); // Once the user is loaded, set loading to false
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

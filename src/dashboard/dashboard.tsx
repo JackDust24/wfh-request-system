@@ -5,23 +5,29 @@ import { Sidebar } from './sidebar';
 import { Header } from './components/Header';
 import { useRequireAuth } from '../hooks/useRequestAuth';
 import { useWFHStore } from '../store/wfhRequestsStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function Dashboard() {
   const user = useRequireAuth();
-  const { addUser, setLoggedInUserEmail } = useWFHStore();
+  const { addUser } = useWFHStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
+
     if (user) {
-      addUser({
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        dates: [], // If user already exists with data the existing state will handle this
-      });
-      setLoggedInUserEmail(user.email);
+      const addData = () => {
+        addUser({
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          dates: [],
+        });
+        setIsLoading(false);
+      };
+      addData();
     }
-  }, [user, addUser, setLoggedInUserEmail]);
+  }, [user, addUser]);
 
   if (!user) {
     return null; //TODO: Add loading state
@@ -37,7 +43,7 @@ export function Dashboard() {
             <RequestForm />
             <Profile />
           </div>
-          <CalendarTable />
+          {!isLoading && <CalendarTable />}
         </main>
       </div>
     </>

@@ -24,7 +24,6 @@ jest.mock('../store/wfhRequestsStore', () => ({
 }));
 
 describe('Dashboard', () => {
-  const setLoggedInUserEmailMock = jest.fn();
   const addUserMock = jest.fn();
 
   const mockData: UserRequest[] = [
@@ -74,9 +73,7 @@ describe('Dashboard', () => {
 
     (useWFHStore as unknown as jest.Mock).mockReturnValue({
       addUser: addUserMock,
-      setLoggedInUserEmail: setLoggedInUserEmailMock,
       users: mockData,
-      loggedInUserEmail: 'jason@example.com',
       addDate: jest.fn(),
     });
   });
@@ -93,7 +90,6 @@ describe('Dashboard', () => {
   test('able to call the store functions and add user', () => {
     render(<Dashboard />);
 
-    expect(setLoggedInUserEmailMock).toHaveBeenCalledWith('jason@example.com');
     expect(addUserMock).toHaveBeenCalledWith({
       email: 'jason@example.com',
       name: 'Jason Whittaker',

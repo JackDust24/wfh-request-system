@@ -66,7 +66,6 @@ describe('CalendarTable', () => {
     (useWFHStore as unknown as jest.Mock).mockReturnValue({
       addUser: addUserMock,
       users: [...mockData, mockLoggedInUser],
-      loggedInUserEmail: 'jason@example.com',
       addDate: addDateMock,
     });
   });
@@ -80,7 +79,7 @@ describe('CalendarTable', () => {
       ).toBeInTheDocument();
     });
 
-    const rowLength = mockData.length + 2; // 1 for header and 1 for logged in user
+    const rowLength = mockData.length + 2; // 1 for header and 1 for logged in userQ
 
     const rows = screen.getAllByRole('row');
     expect(rows).toHaveLength(rowLength);
