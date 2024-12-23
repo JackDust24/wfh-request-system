@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import { useFetchCalendarData } from '../../api/userdata';
 import { getWeekDates } from '../../lib/dateHelper';
 import { UserRequest } from '../../lib/types';
+import { useWFHStore } from '../../store/wfhRequestsStore';
+import { sortUsers } from './helpers/helper';
 
 const API_URL =
   process.env.MOCK_JSON_API ||
@@ -19,11 +22,24 @@ const tableHead = [
 
 export function CalendarTable() {
   const { data, loading, error } = useFetchCalendarData(API_URL);
+  const { addUser, addDate, users, loggedInUserEmail } = useWFHStore();
 
   const startDate = new Date('2024-12-23'); //TODO: We will get the user to select this
   const weekDates = getWeekDates(startDate);
 
-  const calendarData = data?.map((item: UserRequest) => {
+  // Populate the store with the data from the API
+  useEffect(() => {
+    if (data) {
+      data.forEach((user: UserRequest) => {
+        addUser(user);
+        user.dates.forEach((date) => addDate(date, user.email));
+      });
+    }
+  }, [data, addUser, addDate]);
+
+  const sortedUsers = sortUsers(users, loggedInUserEmail);
+
+  const calendarData = sortedUsers?.map((item: UserRequest) => {
     return {
       user: item.name,
       monday: item.dates.includes(weekDates[0]) ? 'WFH Requested' : '',
