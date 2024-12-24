@@ -1,6 +1,3 @@
-// StatusLabel.tsx
-import React from 'react';
-
 type StatusLabelProps = {
   status: string;
   isClickable: boolean;

@@ -1,5 +1,3 @@
-// StatusCell.tsx
-import React from 'react';
 import { StatusLabel } from './StatusLabel';
 
 type StatusCellProps = {

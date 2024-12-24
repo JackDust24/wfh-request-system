@@ -27,9 +27,9 @@ describe('Profile', () => {
       screen.getByRole('heading', { name: /user profile/i })
     ).toBeInTheDocument();
 
-    expect(screen.getByText(/name: Jason Whittaker/i)).toBeInTheDocument();
-    expect(screen.getByText(/email: jason@example.com/i)).toBeInTheDocument();
-    expect(screen.getByText(/role: frontend developer/i)).toBeInTheDocument();
+    expect(screen.getByText(/Jason Whittaker/i)).toBeInTheDocument();
+    expect(screen.getByText(/jason@example.com/i)).toBeInTheDocument();
+    expect(screen.getByText(/frontend developer/i)).toBeInTheDocument();
   });
 
   test('returns null when no user is provided', () => {

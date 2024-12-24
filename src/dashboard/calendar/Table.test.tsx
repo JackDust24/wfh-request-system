@@ -8,7 +8,6 @@ import { useWFHStore } from '../../store/wfhRequestsStore';
 import { useAuth } from '../../providers/UserAuthProvider';
 import { TableRow } from './components/TableRow';
 import * as auth from '../../hooks/useRequestAuth';
-import * as store from '../../store/useWFHStore';
 
 jest.mock('../../providers/UserAuthProvider', () => ({
   useAuth: jest.fn(),

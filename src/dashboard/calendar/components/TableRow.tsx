@@ -1,4 +1,3 @@
-import React from 'react';
 import { StatusCell } from './StatusCell';
 import { CalendarDataType } from '../../../lib/types';
 import { CALENDAR_DAY_MAPPING } from '../../../lib/dateHelper';
