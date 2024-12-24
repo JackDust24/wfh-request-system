@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { useRequireAuth } from '../hooks/useRequestAuth';
 import { useWFHStore } from '../store/wfhRequestsStore';
 import { useEffect, useState } from 'react';
+import { Instructions } from './components/Instructions';
 
 export function Dashboard() {
   const user = useRequireAuth();
@@ -30,7 +31,7 @@ export function Dashboard() {
   }, [user, addUser]);
 
   if (!user) {
-    return null; //TODO: Add loading state
+    return null;
   }
 
   return (
@@ -40,6 +41,7 @@ export function Dashboard() {
         <Sidebar />
         <main className='flex-1 p-6 bg-background'>
           <div className='grid grid-cols-3 gap-6 mb-6'>
+            <Instructions />
             <RequestForm />
             <Profile />
           </div>

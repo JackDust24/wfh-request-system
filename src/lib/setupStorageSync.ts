@@ -8,6 +8,7 @@ export const useWFHSync = () => {
   const store = useWFHStore();
 
   useEffect(() => {
+    // useWFHStore.getState().reset();
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'wfh-store') {
         try {

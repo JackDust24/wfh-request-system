@@ -1,28 +1,13 @@
-// TableRow.tsx
 import React from 'react';
 import { StatusCell } from './StatusCell';
 import { CalendarDataType } from '../../../lib/types';
+import { CALENDAR_DAY_MAPPING } from '../../../lib/dateHelper';
 
 type TableRowProps = {
   entry: CalendarDataType;
   userEmail: string | null;
   weekDates: string[];
   onClick: (day: string, action: 'add' | 'delete') => void;
-};
-
-const dayMapping: {
-  [key in
-    | '2024-12-23'
-    | '2024-12-24'
-    | '2024-12-25'
-    | '2024-12-26'
-    | '2024-12-27']: string;
-} = {
-  '2024-12-23': 'monday',
-  '2024-12-24': 'tuesday',
-  '2024-12-25': 'wednesday',
-  '2024-12-26': 'thursday',
-  '2024-12-27': 'friday',
 };
 
 export function TableRow({
@@ -40,10 +25,11 @@ export function TableRow({
       </td>
 
       {weekDates.map((date, index) => {
-        const dayName = dayMapping[date as keyof typeof dayMapping];
+        const dayName =
+          CALENDAR_DAY_MAPPING[date as keyof typeof CALENDAR_DAY_MAPPING];
         const status = entry[dayName as keyof CalendarDataType];
         const isUser = userEmail === entry.email;
-        const isClickable = isUser && status !== 'Unavailable';
+        const isClickable = isUser;
 
         return (
           <StatusCell

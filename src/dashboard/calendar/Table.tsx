@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useFetchCalendarData } from '../../api/userdata';
-import { getWeekDates } from '../../lib/dateHelper';
+import { getWeekDates, START_DATE } from '../../lib/dateHelper';
 import { CalendarDataType, UserRequest } from '../../lib/types';
 import { useWFHStore } from '../../store/wfhRequestsStore';
 import { sortUsers } from './helpers/helper';
@@ -21,7 +21,7 @@ export function CalendarTable() {
   const { addUser, addDate, deleteDate, users } = useWFHStore();
   const [calendarData, setCalendarData] = useState<CalendarDataType[]>([]);
 
-  const startDate = new Date('2024-12-23'); //TODO: We will get the user to select this
+  const startDate = START_DATE;
   const weekDates = getWeekDates(startDate);
 
   const generateCalendarData = () => {
@@ -43,7 +43,8 @@ export function CalendarTable() {
   };
 
   useEffect(() => {
-    if (data) {
+    if (data && !initialLoad) {
+      // Update the store with the fetched data
       data.forEach((user: UserRequest) => {
         addUser(user);
       });
@@ -69,25 +70,26 @@ export function CalendarTable() {
     }
   }, []);
 
+  //TODO: Check if need this
   useEffect(() => {
+    console.log('users useEffect called', users);
     generateCalendarData();
   }, [users]);
 
+  // Here we handle the add/delete request depending on which the user clicked
   const handleRequestClick = (day: string, action: 'add' | 'delete') => {
     if (action === 'add') {
       const callAddDate = addDate(day, user?.email ?? '');
       if (callAddDate.success) {
         generateCalendarData();
-      } else {
-        alert(callAddDate.message);
       }
+      alert(callAddDate.message);
     } else if (action === 'delete') {
       const callDeleteDate = deleteDate(day, user?.email ?? '');
       if (callDeleteDate.success) {
         generateCalendarData();
-      } else {
-        alert(callDeleteDate.message);
       }
+      alert(callDeleteDate.message);
     }
   };
 
