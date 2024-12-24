@@ -38,6 +38,7 @@ Set up with React and Vite with Tailwind.css for styling.
 * Calendar - One of the challenges I had was dealing with a calendar for different weeks, so for MVP I just did one week and put the idea to implement other week solutions later, but not got round to it. One of the challenges I had was dealing with the dates but to know which day it refers to, i.e. Monday, Tuesday etc and to not include Saturday and Sunday. So my solution was to hard code it for now.
 * Repopulating the data - A couple of challenges I had was related to real time updates and dealing with the mock api users as well as the user I had and then repopulating the data correctly; ran into a couple of issues such as continuous loop and undefined user. I resolved this, by carefully checking useEffect dependencies and not accessing the user until properly loaded.
 * Unit tests - A bit rusty writing unit tests, so a couple of things I had forgotten, such as mocking state, custom hooks and providers. To resolve, I got myself familiar with some older code to remind myself.
+* Typescript - A couple of warnings were highlighted that had to disable; one for me to look into detail how to resolve but nothing too important.
 
 ## Outstanding Items Not Delivered
 Though tried to implement all in time; a couple of items were not delivered.

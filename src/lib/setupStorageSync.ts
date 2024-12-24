@@ -5,6 +5,7 @@
 import { useEffect } from 'react';
 import { WFHEventEmitter } from './eventEmitter';
 
+//TODO: Have not got this complelety working yet
 export const useWFHSync = () => {
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {

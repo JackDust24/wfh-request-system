@@ -63,7 +63,6 @@ export function CalendarTable() {
       // Attach listeners
       WFHEventEmitter.on('wfhEventChange', handleEvent);
 
-      // Cleanup listeners on unmount
       return () => {
         WFHEventEmitter.off('wfhEventChange', handleEvent);
       };

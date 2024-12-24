@@ -177,7 +177,6 @@ describe('CalendarTable', () => {
 
     const wfhRequestCells = screen.getAllByText('WFH Request');
 
-    // Click on the first "In Office" cell
     await user.click(wfhRequestCells[0]);
 
     expect(mockOnClick).toHaveBeenCalledWith('2024-12-23', 'delete');
@@ -230,7 +229,6 @@ describe('CalendarTable', () => {
       </table>
     );
 
-    // Find all "In Office" and "WFH Request" cells
     const inOfficeCells = screen.getAllByText('In Office');
     const wfhRequestCells = screen.getAllByText('WFH Request');
 
