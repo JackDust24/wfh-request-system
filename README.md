@@ -68,6 +68,6 @@ Though tried to implement all in time; a couple of items were not delivered.
 
 ## Deployment
 A deployed version can be accessed here:
-[text](https://wfh-request-system.vercel.app/)
+[wfh-studio](https://wfh-request-system.vercel.app/)
 
 
