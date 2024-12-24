@@ -3,8 +3,7 @@
 ## Overview
 This is a Work-from-Home (WFH) Management Software designed to help users log in, track WFH requests from others via a calendar table, and submit their own requests. The project showcases the implementation of a modern React application, emphasizing effective state management, smooth user interactions, real-time data updates, and a clean, user-friendly UI/UX design.
 
-### Key Features
-
+## Key Features
 * Login
 * Dashboard show WFH Requests and User Information
 * View WFH Requests
@@ -31,14 +30,14 @@ Set up with React and Vite with Tailwind.css for styling.
 * State Management: I used two state management; ContextAPI for the User logged in and for handling WFH requests, I used Zustand. I thought about using Redux, but for preference I chose Zustand as more familiar with it, simpler to implement, easy to persist the store, easier to implement and I think Redux works better for bigger applications than this one.
 * Storage: To persist data, used Local Storage, which I set through Zustand store.
 * Calendar: My aim was to get the app working with a MVP o just set it for a week. In a real application, will have more than one week and let the user choose which month and week etc.
+* Deployment: Used Vercel to deply the app.
 
 ## Challenges Faced 
-
-* Vite and unit testing - Why
-* Real time updates - Why
-* Calendar - Why
-* Repopulating the data - Why
-* Unit tests - Why
+* Vite and unit testing - Ran into an issue where I could not get testing to set up properly and run properly. Reading the Vite documentation, it highlighted that Jest does not work well with Vite, but did not go into detail how to resolve. On further investigation online, the TSX file transformations with the “transform” config prop of jest does not work properly with Vite, so to make things simple I used babel to transpile the txs files as well.
+* Real time updates - Unfortunately, I made a mistake here and should have focused on this a lot earlier. but due to time constraints, I did not have enough time to work out the issue, so moved on to finish the other features. In a normal situation, like with Node.js and React, I would implement Web Sockets, but as this is React only app, tried to implement an event and listener pattern, but could not get it working to update other tabs. Keen to experiment further on this after Christmas.
+* Calendar - One of the challenges I had was dealing with a calendar for different weeks, so for MVP I just did one week and put the idea to implement other week solutions later, but not got round to it. One of the challenges I had was dealing with the dates but to know which day it refers to, i.e. Monday, Tuesday etc and to not include Saturday and Sunday. So my solution was to hard code it for now.
+* Repopulating the data - A couple of challenges I had was related to real time updates and dealing with the mock api users as well as the user I had and then repopulating the data correctly; ran into a couple of issues such as continuous loop and undefined user. I resolved this, by carefully checking useEffect dependencies and not accessing the user until properly loaded.
+* Unit tests - A bit rusty writing unit tests, so a couple of things I had forgotten, such as mocking state, custom hooks and providers. To resolve, I got myself familiar with some older code to remind myself.
 
 ## Outstanding Items Not Delivered
 Though tried to implement all in time; a couple of items were not delivered.
@@ -66,9 +65,8 @@ Though tried to implement all in time; a couple of items were not delivered.
 7. You can open another tab and add other users (but real time updates are not applied).
 8. To reset the data added and clear the storage, click Logout.
 
-## Code
-
 ## Deployment
-
+A deployed version can be accessed here:
+[text](https://wfh-request-system.vercel.app/)
 
 
