@@ -1,14 +1,12 @@
+// This enables the same storage is shared between different tabs in the same browser.
+
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useEffect } from 'react';
-import { useWFHStore } from '../store/wfhRequestsStore';
 import { WFHEventEmitter } from './eventEmitter';
 
 export const useWFHSync = () => {
-  const store = useWFHStore();
-
   useEffect(() => {
-    // useWFHStore.getState().reset();
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'wfh-store') {
         try {

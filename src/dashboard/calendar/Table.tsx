@@ -70,9 +70,7 @@ export function CalendarTable() {
     }
   }, []);
 
-  //TODO: Check if need this
   useEffect(() => {
-    console.log('users useEffect called', users);
     generateCalendarData();
   }, [users]);
 
@@ -102,6 +100,13 @@ export function CalendarTable() {
         <h3 className='text-lg font-semibold mb-4 text-primary'>
           Team Calendar
         </h3>
+        <h4 className='text-secondary'>
+          Under your name you can see the days you have requested to work from
+          home. Click the appropriate day to submit a request.
+        </h4>
+        <h4 className='mb-4 text-secondary'>
+          <strong>Hover</strong> over an existing request to remove the request.
+        </h4>
         <table className='w-full min-w-[800px] table-fixed border-collapse'>
           <thead>
             <TableHeader weekDates={weekDates} />

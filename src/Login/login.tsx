@@ -64,6 +64,7 @@ export const LoginPage = () => {
           value={formData.name}
           onChange={handleChange('name')}
           error={errors.name}
+          subLabel='If using an existing email, your name will be updated.'
         />
 
         <InputField
@@ -72,6 +73,7 @@ export const LoginPage = () => {
           value={formData.email}
           onChange={handleChange('email')}
           error={errors.email}
+          subLabel='You can log in with existing email'
         />
 
         <InputField
@@ -80,6 +82,7 @@ export const LoginPage = () => {
           value={formData.password}
           onChange={handleChange('password')}
           error={errors.password}
+          subLabel='Password must contain at least 8 characters with a number and special character.'
         />
 
         <InputField
@@ -88,7 +91,8 @@ export const LoginPage = () => {
           value={formData.role}
           onChange={handleChange('role')}
           error={errors.role}
-          placeholder='Position in the company'
+          subLabel='Position in the company'
+          placeholder='e.g. Software Engineer'
         />
 
         <Button type='submit' text='Login' variant='default' />

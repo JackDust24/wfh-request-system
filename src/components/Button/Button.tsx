@@ -5,6 +5,8 @@ type ButtonProps = {
   type?: 'button' | 'submit' | 'reset';
   text: string;
   variant?: 'default' | 'destructive' | 'secondary';
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 
 const buttonVariantClasses = {
@@ -19,12 +21,16 @@ export function Button({
   type = 'button',
   text,
   variant = 'default',
+  onMouseEnter,
+  onMouseLeave,
 }: ButtonProps) {
   return (
     <button
       type={type}
       className={`px-4 py-2 ${buttonVariantClasses[variant]}`}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {text}
     </button>

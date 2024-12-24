@@ -16,9 +16,15 @@ export function TableRow({
   weekDates,
   onClick,
 }: TableRowProps) {
+  const isUser = userEmail === entry.email;
+
   return (
-    <tr className='odd:bg-white even:bg-gray-50' role='row'>
-      <td className='border p-2'>
+    <tr className='odd:bg-white even:bg-gray-50}' role='row'>
+      <td
+        className={`border p-2 ${
+          isUser ? 'font-bold text-blue-700' : 'text-secondary'
+        }`}
+      >
         <div className='h-10 max-h-10 overflow-hidden flex items-center px-2'>
           <div className='line-clamp-2 text-sm'>{entry.user}</div>
         </div>
@@ -28,7 +34,6 @@ export function TableRow({
         const dayName =
           CALENDAR_DAY_MAPPING[date as keyof typeof CALENDAR_DAY_MAPPING];
         const status = entry[dayName as keyof CalendarDataType];
-        const isUser = userEmail === entry.email;
         const isClickable = isUser;
 
         return (

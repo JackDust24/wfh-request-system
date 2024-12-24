@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
+import { useWFHStore } from '../store/wfhRequestsStore';
 
 type User = {
   id: string;
@@ -42,6 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    useWFHStore.getState().reset();
   };
 
   useEffect(() => {

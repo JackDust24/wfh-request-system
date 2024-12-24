@@ -2,6 +2,7 @@ import React from 'react';
 
 type InputFieldProps = {
   label: string;
+  subLabel?: string;
   type: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -11,6 +12,7 @@ type InputFieldProps = {
 
 export function InputField({
   label,
+  subLabel,
   type,
   value,
   onChange,
@@ -25,6 +27,9 @@ export function InputField({
       >
         {label}
       </label>
+      {subLabel && (
+        <label className='block text-xs text-gray-500'>{subLabel}</label>
+      )}
       <input
         type={type}
         id={label}
