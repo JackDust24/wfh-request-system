@@ -6,7 +6,7 @@ import { LoginPage } from './Login/login';
 import { useWFHSync } from './lib/setupStorageSync';
 
 function App() {
-  useWFHSync();
+  // useWFHSync();
 
   return (
     <div className='flex flex-col h-screen'>

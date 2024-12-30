@@ -11,24 +11,22 @@ import { Instructions } from './components/Instructions';
 export function Dashboard() {
   const user = useRequireAuth();
   const { addUser } = useWFHStore();
+  const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-
-    if (user) {
-      const addData = () => {
-        addUser({
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          dates: [],
-        });
-        setIsLoading(false);
-      };
-      addData();
+    if (user && !isInitialized) {
+      setIsLoading(true);
+      addUser({
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        dates: [],
+      });
+      setIsInitialized(true);
+      setIsLoading(false);
     }
-  }, [user, addUser]);
+  }, [user, addUser, isInitialized]);
 
   if (!user) {
     return null;

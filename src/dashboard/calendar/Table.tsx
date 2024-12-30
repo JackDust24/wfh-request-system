@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFetchCalendarData } from '../../api/userdata';
 import { getWeekDates, START_DATE } from '../../lib/dateHelper';
 import { CalendarDataType, UserRequest } from '../../lib/types';
@@ -19,73 +19,41 @@ export function CalendarTable() {
   const [initialLoad, setInitialLoad] = useState(false);
   const { data, loading, error } = useFetchCalendarData(API_URL);
   const { addUser, addDate, deleteDate, users } = useWFHStore();
-  const [calendarData, setCalendarData] = useState<CalendarDataType[]>([]);
 
   const startDate = START_DATE;
   const weekDates = getWeekDates(startDate);
 
-  const generateCalendarData = () => {
+  const calendarData: CalendarDataType[] = useMemo(() => {
+    if (!users) return [];
+
     const sortedUsers = sortUsers(users, user?.email ?? null);
+    return sortedUsers?.map((item: UserRequest) => ({
+      user: item.name,
+      email: item.email,
+      monday: item.dates.includes(weekDates[0]) ? 'WFH Requested' : '',
+      tuesday: item.dates.includes(weekDates[1]) ? 'WFH Requested' : '',
+      wednesday: item.dates.includes(weekDates[2]) ? 'WFH Requested' : '',
+      thursday: item.dates.includes(weekDates[3]) ? 'WFH Requested' : '',
+      friday: item.dates.includes(weekDates[4]) ? 'WFH Requested' : '',
+    }));
+  }, [users, user?.email, weekDates]);
 
-    const updatedCalendarData = sortedUsers?.map((item: UserRequest) => {
-      return {
-        user: item.name,
-        email: item.email,
-        monday: item.dates.includes(weekDates[0]) ? 'WFH Requested' : '',
-        tuesday: item.dates.includes(weekDates[1]) ? 'WFH Requested' : '',
-        wednesday: item.dates.includes(weekDates[2]) ? 'WFH Requested' : '',
-        thursday: item.dates.includes(weekDates[3]) ? 'WFH Requested' : '',
-        friday: item.dates.includes(weekDates[4]) ? 'WFH Requested' : '',
-      };
-    });
-
-    setCalendarData(updatedCalendarData);
-  };
-
+  // Handle initial data load
   useEffect(() => {
     if (data && !initialLoad) {
-      // Update the store with the fetched data
       data.forEach((user: UserRequest) => {
         addUser(user);
       });
-      generateCalendarData();
       setInitialLoad(true);
     }
-  }, [data, addUser]);
+  }, [data, addUser, initialLoad]);
 
-  //TODO: Unable to get even listener to work as of yet
-  useEffect(() => {
-    if (initialLoad) {
-      const handleEvent = () => {
-        generateCalendarData();
-      };
-
-      // Attach listeners
-      WFHEventEmitter.on('wfhEventChange', handleEvent);
-
-      return () => {
-        WFHEventEmitter.off('wfhEventChange', handleEvent);
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    generateCalendarData();
-  }, [users]);
-
-  // Here we handle the add/delete request depending on which the user clicked
   const handleRequestClick = (day: string, action: 'add' | 'delete') => {
     if (action === 'add') {
       const callAddDate = addDate(day, user?.email ?? '');
-      if (callAddDate.success) {
-        generateCalendarData();
-      }
       alert(callAddDate.message);
     } else if (action === 'delete') {
       const callDeleteDate = deleteDate(day, user?.email ?? '');
-      if (callDeleteDate.success) {
-        generateCalendarData();
-      }
       alert(callDeleteDate.message);
     }
   };

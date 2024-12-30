@@ -1,14 +1,15 @@
 import { create } from 'zustand';
 import { UserRequest } from '../lib/types';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { WFHEventEmitter } from '../lib/eventEmitter';
+import { syncedStorage } from '../lib/setupStorageSync';
 
 type WfhRequestResponse = {
   success: boolean;
   message: string;
 };
 
-type WFHStore = {
+export type WFHStore = {
   users: Record<string, UserRequest>;
   requestsPerDay: Record<string, string[]>;
   addUser: (user: UserRequest) => void;
@@ -193,7 +194,8 @@ export const useWFHStore = create(
     }),
 
     {
-      name: 'wfh-store', // Local storage persistent key
+      name: 'wfh-store',
+      storage: createJSONStorage(() => syncedStorage), // Sync the storagey
     }
   )
 );
