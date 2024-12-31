@@ -8,10 +8,13 @@ type ApiResponse = {
 
 export const useFetchCalendarData = (url: string) => {
   const [data, setData] = useState<UserRequest[] | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('useFetchCalendarData', isInitialLoad);
+    if (isInitialLoad) return;
     const fetchData = async () => {
       try {
         const response: AxiosResponse<ApiResponse> = await axios.get(url);
@@ -29,11 +32,12 @@ export const useFetchCalendarData = (url: string) => {
         }
       } finally {
         setLoading(false);
+        setIsInitialLoad(true);
       }
     };
 
     void fetchData();
-  }, [url]);
+  }, []);
 
   return { data, loading, error };
 };

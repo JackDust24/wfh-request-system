@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { UserRequest } from '../lib/types';
-import { persist } from 'zustand/middleware';
-import { WFHEventEmitter } from '../lib/eventEmitter';
+import { createJSONStorage, persist } from 'zustand/middleware';
+import { syncedStorage } from '../lib/setupStorageSync';
 
 type WfhRequestResponse = {
   success: boolean;
   message: string;
 };
 
-type WFHStore = {
+export type WFHStore = {
   users: Record<string, UserRequest>;
   requestsPerDay: Record<string, string[]>;
   addUser: (user: UserRequest) => void;
@@ -56,8 +56,6 @@ export const useWFHStore = create(
             }
           }
 
-          WFHEventEmitter.emit('wfhEventChange');
-
           return { users: updatedUsers };
         });
       },
@@ -99,8 +97,6 @@ export const useWFHStore = create(
           };
           return { requestsPerDay: updatedRequests, users: updatedUsers };
         });
-
-        WFHEventEmitter.emit('wfhEventChange');
 
         return { success: true, message: 'Date successfully added.' };
       },
@@ -153,8 +149,6 @@ export const useWFHStore = create(
           return { requestsPerDay: updatedRequestsPerDay, users: updatedUsers };
         });
 
-        WFHEventEmitter.emit('wfhEventChange');
-
         return { success: true, message: 'Dates successfully added.' };
       },
 
@@ -180,8 +174,6 @@ export const useWFHStore = create(
           return { requestsPerDay: updatedRequests, users: updatedUsers };
         });
 
-        WFHEventEmitter.emit('wfhEventChange');
-
         return { success: true, message: 'Date successfully deleted.' };
       },
 
@@ -193,7 +185,8 @@ export const useWFHStore = create(
     }),
 
     {
-      name: 'wfh-store', // Local storage persistent key
+      name: 'wfh-store',
+      storage: createJSONStorage(() => syncedStorage), // Sync the storagey
     }
   )
 );

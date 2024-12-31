@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFetchCalendarData } from '../../api/userdata';
 import { getWeekDates, START_DATE } from '../../lib/dateHelper';
 import { CalendarDataType, UserRequest } from '../../lib/types';
 import { useWFHStore } from '../../store/wfhRequestsStore';
 import { sortUsers } from './helpers/helper';
-import { WFHEventEmitter } from '../../lib/eventEmitter';
 import { useRequireAuth } from '../../hooks/useRequestAuth';
 import { TableHeader } from './components/TableHeader';
 import { TableRow } from './components/TableRow';
 
 const API_URL =
   process.env.MOCK_JSON_API ||
-  'https://run.mocky.io/v3/e623cd04-eeca-4155-8da0-6851162c4d53';
+  'https://run.mocky.io/v3/4afd8136-27e3-4f15-bcc9-39ab3023f459';
 
 export function CalendarTable() {
   const user = useRequireAuth();
@@ -19,79 +18,57 @@ export function CalendarTable() {
   const [initialLoad, setInitialLoad] = useState(false);
   const { data, loading, error } = useFetchCalendarData(API_URL);
   const { addUser, addDate, deleteDate, users } = useWFHStore();
-  const [calendarData, setCalendarData] = useState<CalendarDataType[]>([]);
 
   const startDate = START_DATE;
   const weekDates = getWeekDates(startDate);
 
-  const generateCalendarData = () => {
+  const hasLoaded = useRef(false);
+
+  const calendarData: CalendarDataType[] = useMemo(() => {
+    if (!users) return [];
+
     const sortedUsers = sortUsers(users, user?.email ?? null);
+    return sortedUsers?.map((item: UserRequest) => ({
+      user: item.name,
+      email: item.email,
+      monday: item.dates.includes(weekDates[0]) ? 'WFH Requested' : '',
+      tuesday: item.dates.includes(weekDates[1]) ? 'WFH Requested' : '',
+      wednesday: item.dates.includes(weekDates[2]) ? 'WFH Requested' : '',
+      thursday: item.dates.includes(weekDates[3]) ? 'WFH Requested' : '',
+      friday: item.dates.includes(weekDates[4]) ? 'WFH Requested' : '',
+    }));
+  }, [users, user?.email, weekDates]);
 
-    const updatedCalendarData = sortedUsers?.map((item: UserRequest) => {
-      return {
-        user: item.name,
-        email: item.email,
-        monday: item.dates.includes(weekDates[0]) ? 'WFH Requested' : '',
-        tuesday: item.dates.includes(weekDates[1]) ? 'WFH Requested' : '',
-        wednesday: item.dates.includes(weekDates[2]) ? 'WFH Requested' : '',
-        thursday: item.dates.includes(weekDates[3]) ? 'WFH Requested' : '',
-        friday: item.dates.includes(weekDates[4]) ? 'WFH Requested' : '',
-      };
-    });
-
-    setCalendarData(updatedCalendarData);
-  };
-
+  // Handle initial data load
   useEffect(() => {
     if (data && !initialLoad) {
-      // Update the store with the fetched data
       data.forEach((user: UserRequest) => {
         addUser(user);
       });
-      generateCalendarData();
       setInitialLoad(true);
+      hasLoaded.current = true;
     }
-  }, [data, addUser]);
+  }, [data, addUser, initialLoad]);
 
-  //TODO: Unable to get even listener to work as of yet
-  useEffect(() => {
-    if (initialLoad) {
-      const handleEvent = () => {
-        generateCalendarData();
-      };
-
-      // Attach listeners
-      WFHEventEmitter.on('wfhEventChange', handleEvent);
-
-      return () => {
-        WFHEventEmitter.off('wfhEventChange', handleEvent);
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    generateCalendarData();
-  }, [users]);
-
-  // Here we handle the add/delete request depending on which the user clicked
   const handleRequestClick = (day: string, action: 'add' | 'delete') => {
     if (action === 'add') {
       const callAddDate = addDate(day, user?.email ?? '');
-      if (callAddDate.success) {
-        generateCalendarData();
-      }
       alert(callAddDate.message);
     } else if (action === 'delete') {
       const callDeleteDate = deleteDate(day, user?.email ?? '');
-      if (callDeleteDate.success) {
-        generateCalendarData();
-      }
       alert(callDeleteDate.message);
     }
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (error && !initialLoad) {
+    console.error(error);
+    console.log(initialLoad);
+
+    setInitialLoad(true);
+    // hasLoaded.current = true;
+    alert('Error fetching data from API. Please try again later.');
+  }
 
   return (
     <div className='component p-6 rounded shadow'>

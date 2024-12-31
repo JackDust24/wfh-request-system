@@ -1,6 +1,6 @@
 export function Instructions() {
   return (
-    <div className='p-6 rounded shadow bg-gray-50'>
+    <div className='p-6 component rounded shadow bg-gray-50'>
       <h3 className='text-lg font-semibold mb-4 text-primary'>Instructions</h3>
       <p className='text-secondary mb-4'>
         Please select the dates you wish to request to work from home in the
