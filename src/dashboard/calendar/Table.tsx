@@ -1,17 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFetchCalendarData } from '../../api/userdata';
 import { getWeekDates, START_DATE } from '../../lib/dateHelper';
 import { CalendarDataType, UserRequest } from '../../lib/types';
 import { useWFHStore } from '../../store/wfhRequestsStore';
 import { sortUsers } from './helpers/helper';
-import { WFHEventEmitter } from '../../lib/eventEmitter';
 import { useRequireAuth } from '../../hooks/useRequestAuth';
 import { TableHeader } from './components/TableHeader';
 import { TableRow } from './components/TableRow';
 
 const API_URL =
   process.env.MOCK_JSON_API ||
-  'https://run.mocky.io/v3/e623cd04-eeca-4155-8da0-6851162c4d53';
+  'https://run.mocky.io/v3/4afd8136-27e3-4f15-bcc9-39ab3023f459';
 
 export function CalendarTable() {
   const user = useRequireAuth();
@@ -22,6 +21,8 @@ export function CalendarTable() {
 
   const startDate = START_DATE;
   const weekDates = getWeekDates(startDate);
+
+  const hasLoaded = useRef(false);
 
   const calendarData: CalendarDataType[] = useMemo(() => {
     if (!users) return [];
@@ -45,6 +46,7 @@ export function CalendarTable() {
         addUser(user);
       });
       setInitialLoad(true);
+      hasLoaded.current = true;
     }
   }, [data, addUser, initialLoad]);
 
@@ -59,7 +61,14 @@ export function CalendarTable() {
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (error && !initialLoad) {
+    console.error(error);
+    console.log(initialLoad);
+
+    setInitialLoad(true);
+    // hasLoaded.current = true;
+    alert('Error fetching data from API. Please try again later.');
+  }
 
   return (
     <div className='component p-6 rounded shadow'>

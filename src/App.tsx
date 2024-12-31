@@ -3,11 +3,8 @@ import './App.css';
 import { AuthProvider } from './providers/UserAuthProvider';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage } from './Login/login';
-import { useWFHSync } from './lib/setupStorageSync';
 
 function App() {
-  // useWFHSync();
-
   return (
     <div className='flex flex-col h-screen'>
       <AuthProvider>

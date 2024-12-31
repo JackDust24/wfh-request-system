@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { UserRequest } from '../lib/types';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { WFHEventEmitter } from '../lib/eventEmitter';
 import { syncedStorage } from '../lib/setupStorageSync';
 
 type WfhRequestResponse = {
@@ -57,8 +56,6 @@ export const useWFHStore = create(
             }
           }
 
-          WFHEventEmitter.emit('wfhEventChange');
-
           return { users: updatedUsers };
         });
       },
@@ -100,8 +97,6 @@ export const useWFHStore = create(
           };
           return { requestsPerDay: updatedRequests, users: updatedUsers };
         });
-
-        WFHEventEmitter.emit('wfhEventChange');
 
         return { success: true, message: 'Date successfully added.' };
       },
@@ -154,8 +149,6 @@ export const useWFHStore = create(
           return { requestsPerDay: updatedRequestsPerDay, users: updatedUsers };
         });
 
-        WFHEventEmitter.emit('wfhEventChange');
-
         return { success: true, message: 'Dates successfully added.' };
       },
 
@@ -180,8 +173,6 @@ export const useWFHStore = create(
 
           return { requestsPerDay: updatedRequests, users: updatedUsers };
         });
-
-        WFHEventEmitter.emit('wfhEventChange');
 
         return { success: true, message: 'Date successfully deleted.' };
       },
