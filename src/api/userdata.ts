@@ -13,8 +13,7 @@ export const useFetchCalendarData = (url: string) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('useFetchCalendarData', isInitialLoad);
-    if (isInitialLoad) return;
+    if (isInitialLoad) return; // We only want to fetch the API once
     const fetchData = async () => {
       try {
         const response: AxiosResponse<ApiResponse> = await axios.get(url);

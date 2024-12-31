@@ -61,7 +61,6 @@ describe('Header', () => {
 
     await user.click(toggleButton);
 
-    // Verify dark mode is activated
     expect(document.documentElement).toHaveClass('dark');
     expect(localStorage.getItem('theme')).toBe('dark');
 

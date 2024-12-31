@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFetchCalendarData } from '../../api/userdata';
 import { getWeekDates, START_DATE } from '../../lib/dateHelper';
 import { CalendarDataType, UserRequest } from '../../lib/types';
@@ -22,8 +22,6 @@ export function CalendarTable() {
   const startDate = START_DATE;
   const weekDates = getWeekDates(startDate);
 
-  const hasLoaded = useRef(false);
-
   const calendarData: CalendarDataType[] = useMemo(() => {
     if (!users) return [];
 
@@ -39,14 +37,12 @@ export function CalendarTable() {
     }));
   }, [users, user?.email, weekDates]);
 
-  // Handle initial data load
   useEffect(() => {
     if (data && !initialLoad) {
       data.forEach((user: UserRequest) => {
         addUser(user);
       });
       setInitialLoad(true);
-      hasLoaded.current = true;
     }
   }, [data, addUser, initialLoad]);
 
@@ -62,11 +58,7 @@ export function CalendarTable() {
 
   if (loading) return <p>Loading...</p>;
   if (error && !initialLoad) {
-    console.error(error);
-    console.log(initialLoad);
-
     setInitialLoad(true);
-    // hasLoaded.current = true;
     alert('Error fetching data from API. Please try again later.');
   }
 
